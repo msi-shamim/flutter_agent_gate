@@ -1,0 +1,39 @@
+name: agent_gate_bloc
+description: >-
+  Bloc / Cubit integration for agent_gate — AI-agnostic behavioural routing
+  middleware for Flutter. Adds GateCubit, GateBloc, typed GateState and a
+  GateBlocListener that performs navigation.
+version: 0.1.0
+homepage: https://github.com/msi-shamim/flutter_agent_gate
+repository: https://github.com/msi-shamim/flutter_agent_gate/tree/master/packages/agent_gate_bloc
+issue_tracker: https://github.com/msi-shamim/flutter_agent_gate/issues
+topics:
+  - navigation
+  - bloc
+  - ai
+  - agent
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  agent_gate: ^0.1.0
+  bloc: ^9.0.0
+  flutter_bloc: ^9.0.0
+  equatable: ^2.0.5
+
+# Monorepo-only: develop against the local core. Ignored by pub for consumers.
+dependency_overrides:
+  agent_gate:
+    path: ../agent_gate
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  bloc_test: ^10.0.0
+
+flutter:
