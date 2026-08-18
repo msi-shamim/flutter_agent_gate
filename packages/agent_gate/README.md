@@ -543,6 +543,7 @@ The system prompt text is available on-device via `PromptBuilder().systemPrompt(
 | [`agent_gate_go_router`](../agent_gate_go_router) | `GoRouterAdapter`, `GateExtra`, `GateRoute.page`, `GateRoute.redirect` (async redirect middleware) |
 | [`agent_gate_getx`](../agent_gate_getx) | `GetxAdapter` (context-free), `GateArguments`, `GateGetPage`, `GateController`, `GateMiddleware` |
 | [`agent_gate_bloc`](../agent_gate_bloc) | `GateCubit`, `GateBloc`, sealed `GateState`, `GateBlocListener` |
+| [`agent_gate_riverpod`](../agent_gate_riverpod) | `gateDecisionProvider`, `GateNotifier`, `GateOutcome`, `GateListener` (Riverpod 3) |
 | [`backends/node`](../../backends/node) | Reference `agent_gate/v1` endpoint — Express + zod + OpenAI-compatible |
 | [`backends/python`](../../backends/python) | Reference `agent_gate/v1` endpoint — FastAPI + OpenAI / Anthropic / Gemini providers |
 

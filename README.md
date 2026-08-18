@@ -8,7 +8,8 @@ backend samples.
 | [`packages/agent_gate`](packages/agent_gate) | **Core** — gates, deciders, tracker, audit, adapters, widgets. Zero AI / state-management deps. | `agent_gate` |
 | [`packages/agent_gate_go_router`](packages/agent_gate_go_router) | GoRouter adapter + `GateRoute` helper | `agent_gate_go_router` |
 | [`packages/agent_gate_getx`](packages/agent_gate_getx) | GetX adapter + `GetPage` helper | `agent_gate_getx` |
-| [`packages/agent_gate_bloc`](packages/agent_gate_bloc) | Bloc/Cubit integration (`GateCubit`, `BlocAdapter`) | `agent_gate_bloc` |
+| [`packages/agent_gate_bloc`](packages/agent_gate_bloc) | Bloc/Cubit integration (`GateCubit`, `GateBloc`, `GateBlocListener`) | `agent_gate_bloc` |
+| [`packages/agent_gate_riverpod`](packages/agent_gate_riverpod) | Riverpod 3 integration (`gateDecisionProvider`, `GateNotifier`, `GateListener`) | `agent_gate_riverpod` |
 | [`backends/node`](backends/node) | Reference `agent_gate/v1` decide endpoint (TypeScript, Express, OpenAI-compatible) | — |
 | [`backends/python`](backends/python) | Reference `agent_gate/v1` decide endpoint (FastAPI, provider-agnostic) | — |
 
