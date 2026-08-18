@@ -6,9 +6,9 @@ description: >-
   fallbacks and timeouts built in. Works with Navigator, GoRouter, GetX,
   Bloc, Riverpod and any other state-management solution.
 version: 0.1.0
-homepage: https://github.com/msishamim/flutter_agent_gate
-repository: https://github.com/msishamim/flutter_agent_gate
-issue_tracker: https://github.com/msishamim/flutter_agent_gate/issues
+homepage: https://github.com/msi-shamim/flutter_agent_gate
+repository: https://github.com/msi-shamim/flutter_agent_gate
+issue_tracker: https://github.com/msi-shamim/flutter_agent_gate/issues
 topics:
   - navigation
   - ai
