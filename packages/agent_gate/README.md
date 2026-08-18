@@ -1,5 +1,7 @@
 # AgentGate for Flutter
 
+[![CI](https://github.com/msi-shamim/flutter_agent_gate/actions/workflows/ci.yml/badge.svg)](https://github.com/msi-shamim/flutter_agent_gate/actions/workflows/ci.yml) [![pub](https://img.shields.io/pub/v/agent_gate.svg)](https://pub.dev/packages/agent_gate)
+
 **AI-agnostic behavioural routing middleware.** From page **A**, declare up to 1,000 candidate next pages **B0 … B999**. AgentGate collects consent-gated behaviour signals on-device, hands them to *your* backend or *your* AI, and routes the user to the one page that fits — with hard timeouts, deterministic fallbacks, allow-lists and a full audit trail.
 
 ```

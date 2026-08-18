@@ -1,5 +1,7 @@
 # AgentGate monorepo
 
+[![CI](https://github.com/msi-shamim/flutter_agent_gate/actions/workflows/ci.yml/badge.svg)](https://github.com/msi-shamim/flutter_agent_gate/actions/workflows/ci.yml) [![pub](https://img.shields.io/pub/v/agent_gate.svg)](https://pub.dev/packages/agent_gate)
+
 AI-agnostic behavioural routing middleware for Flutter, plus adapters and
 backend samples.
 
