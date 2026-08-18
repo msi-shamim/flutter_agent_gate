@@ -1,0 +1,35 @@
+name: agent_gate_getx
+description: >-
+  GetX adapter for agent_gate — AI-agnostic behavioural routing middleware
+  for Flutter. Adds GetxAdapter, GateGetPage and a GateController.
+version: 0.1.0
+homepage: https://github.com/msi-shamim/flutter_agent_gate
+repository: https://github.com/msi-shamim/flutter_agent_gate/tree/master/packages/agent_gate_getx
+issue_tracker: https://github.com/msi-shamim/flutter_agent_gate/issues
+topics:
+  - navigation
+  - getx
+  - ai
+  - agent
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  agent_gate: ^0.1.0
+  get: ^4.7.3
+
+# Monorepo-only: develop against the local core. Ignored by pub for consumers.
+dependency_overrides:
+  agent_gate:
+    path: ../agent_gate
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
