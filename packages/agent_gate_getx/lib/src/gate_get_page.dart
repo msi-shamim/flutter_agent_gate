@@ -36,11 +36,12 @@ class GateGetPage extends GetPage<void> {
     super.fullscreenDialog,
     super.title,
   }) : super(
-          page: () => GatePage(
-            gate: gate,
-            extra: contextFromRoute?.call(Get.parameters, Get.arguments) ??
-                const <String, Object?>{},
-            loading: loading,
-          ),
-        );
+         page: () => GatePage(
+           gate: gate,
+           extra:
+               contextFromRoute?.call(Get.parameters, Get.arguments) ??
+               const <String, Object?>{},
+           loading: loading,
+         ),
+       );
 }

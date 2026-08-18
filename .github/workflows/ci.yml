@@ -1,0 +1,100 @@
+# CI for the AgentGate monorepo.
+#
+# Three independent job families so a failure is easy to localise:
+#   dart     — one matrix entry per Flutter package: pub get, format check,
+#              analyze (fatal on infos too — the packages are lint-clean and we
+#              want to keep them that way), test, and `pub publish --dry-run`
+#              so a broken pubspec/README can never reach pub.dev unnoticed.
+#   node     — typecheck + vitest for backends/node
+#   python   — pytest for backends/python (3.11 and 3.13)
+#
+# Companion packages resolve the core through `dependency_overrides` (path),
+# so a change in packages/agent_gate is exercised by every companion suite in
+# the same run.
+name: CI
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dart:
+    name: dart · ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - agent_gate
+          - agent_gate_go_router
+          - agent_gate_getx
+          - agent_gate_bloc
+          - agent_gate_riverpod
+    defaults:
+      run:
+        working-directory: packages/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter --version
+      - run: flutter pub get
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+      - name: Test
+        run: flutter test --reporter expanded
+      - name: Publish dry-run
+        # Companions emit one hint about dependency_overrides; that is expected
+        # and does not fail the dry-run.
+        run: flutter pub publish --dry-run
+      - name: Example app analyze (core only)
+        if: matrix.package == 'agent_gate'
+        working-directory: packages/agent_gate/example
+        run: flutter pub get && flutter analyze --fatal-infos
+
+  node:
+    name: node · backends/node
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backends/node
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backends/node/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+  python:
+    name: python ${{ matrix.python }} · backends/python
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.13']
+    defaults:
+      run:
+        working-directory: backends/python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: pytest -q

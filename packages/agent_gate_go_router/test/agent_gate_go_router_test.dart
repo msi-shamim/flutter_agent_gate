@@ -16,35 +16,43 @@ class _Fixed implements AgentDecider {
   Stream<String>? reasoning(GateRequest request) => null;
   @override
   Future<GateDecision> decide(GateRequest request) async => GateDecision(
-        candidateId: id,
-        source: DecisionSource.agent,
-        confidence: 0.9,
-        reason: 'test',
-      );
+    candidateId: id,
+    source: DecisionSource.agent,
+    confidence: 0.9,
+    reason: 'test',
+  );
 }
 
 Gate _routeGate() => Gate(
-      id: 'home_to_x',
-      from: 'home',
-      fallback: 'std',
-      config: const GateConfig(showLoadingUi: false),
-      candidates: const <GateCandidate>[
-        GateCandidate(id: 'std', label: 'Std', description: '', route: '/std'),
-        GateCandidate(id: 'exp', label: 'Exp', description: '', route: '/exp'),
-      ],
-    );
+  id: 'home_to_x',
+  from: 'home',
+  fallback: 'std',
+  config: const GateConfig(showLoadingUi: false),
+  candidates: const <GateCandidate>[
+    GateCandidate(id: 'std', label: 'Std', description: '', route: '/std'),
+    GateCandidate(id: 'exp', label: 'Exp', description: '', route: '/exp'),
+  ],
+);
 
 Gate _builderGate() => Gate(
-      id: 'inline',
-      from: 'home',
-      fallback: 'a',
-      candidates: <GateCandidate>[
-        GateCandidate(
-            id: 'a', label: 'A', description: '', builder: (_) => const Text('PAGE A')),
-        GateCandidate(
-            id: 'b', label: 'B', description: '', builder: (_) => const Text('PAGE B')),
-      ],
-    );
+  id: 'inline',
+  from: 'home',
+  fallback: 'a',
+  candidates: <GateCandidate>[
+    GateCandidate(
+      id: 'a',
+      label: 'A',
+      description: '',
+      builder: (_) => const Text('PAGE A'),
+    ),
+    GateCandidate(
+      id: 'b',
+      label: 'B',
+      description: '',
+      builder: (_) => const Text('PAGE B'),
+    ),
+  ],
+);
 
 GoRouter _router({required List<RouteBase> routes, String initial = '/'}) =>
     GoRouter(initialLocation: initial, routes: routes);
@@ -53,20 +61,23 @@ void main() {
   setUp(AgentGate.reset);
 
   group('GoRouterAdapter', () {
-    testWidgets('go() navigates to chosen route and passes GateExtra',
-        (tester) async {
+    testWidgets('go() navigates to chosen route and passes GateExtra', (
+      tester,
+    ) async {
       GateExtra? received;
-      final router = _router(routes: <RouteBase>[
-        GoRoute(path: '/', builder: (_, _) => const Text('HOME')),
-        GoRoute(path: '/std', builder: (_, _) => const Text('STD')),
-        GoRoute(
-          path: '/exp',
-          builder: (_, state) {
-            received = state.gateExtra;
-            return const Text('EXP');
-          },
-        ),
-      ]);
+      final router = _router(
+        routes: <RouteBase>[
+          GoRoute(path: '/', builder: (_, _) => const Text('HOME')),
+          GoRoute(path: '/std', builder: (_, _) => const Text('STD')),
+          GoRoute(
+            path: '/exp',
+            builder: (_, state) {
+              received = state.gateExtra;
+              return const Text('EXP');
+            },
+          ),
+        ],
+      );
       AgentGate.configure(
         decider: _Fixed('exp'),
         adapter: GoRouterAdapter(router: router),
@@ -85,20 +96,23 @@ void main() {
       expect(received!.candidate.route, '/exp');
     });
 
-    testWidgets('resolves router from context when not supplied',
-        (tester) async {
+    testWidgets('resolves router from context when not supplied', (
+      tester,
+    ) async {
       late BuildContext ctx;
-      final router = _router(routes: <RouteBase>[
-        GoRoute(
-          path: '/',
-          builder: (c, _) {
-            ctx = c;
-            return const Text('HOME');
-          },
-        ),
-        GoRoute(path: '/std', builder: (_, _) => const Text('STD')),
-        GoRoute(path: '/exp', builder: (_, _) => const Text('EXP')),
-      ]);
+      final router = _router(
+        routes: <RouteBase>[
+          GoRoute(
+            path: '/',
+            builder: (c, _) {
+              ctx = c;
+              return const Text('HOME');
+            },
+          ),
+          GoRoute(path: '/std', builder: (_, _) => const Text('STD')),
+          GoRoute(path: '/exp', builder: (_, _) => const Text('EXP')),
+        ],
+      );
       AgentGate.configure(
         decider: _Fixed('std'),
         adapter: const GoRouterAdapter(mode: GoRouterNavigationMode.push),
@@ -111,17 +125,19 @@ void main() {
 
     testWidgets('extraBuilder can replace the payload', (tester) async {
       Object? received;
-      final router = _router(routes: <RouteBase>[
-        GoRoute(path: '/', builder: (_, _) => const Text('HOME')),
-        GoRoute(path: '/std', builder: (_, _) => const Text('STD')),
-        GoRoute(
-          path: '/exp',
-          builder: (_, s) {
-            received = s.extra;
-            return const Text('EXP');
-          },
-        ),
-      ]);
+      final router = _router(
+        routes: <RouteBase>[
+          GoRoute(path: '/', builder: (_, _) => const Text('HOME')),
+          GoRoute(path: '/std', builder: (_, _) => const Text('STD')),
+          GoRoute(
+            path: '/exp',
+            builder: (_, s) {
+              received = s.extra;
+              return const Text('EXP');
+            },
+          ),
+        ],
+      );
       AgentGate.configure(
         decider: _Fixed('exp'),
         adapter: GoRouterAdapter(
@@ -168,7 +184,9 @@ void main() {
         decider: CallbackDecider((r) {
           seenApp = r.context.app;
           return const GateDecision(
-              candidateId: 'a', source: DecisionSource.agent);
+            candidateId: 'a',
+            source: DecisionSource.agent,
+          );
         }),
       );
       final router = _router(
@@ -177,8 +195,9 @@ void main() {
           GateRoute.page(
             path: '/inline',
             gate: _builderGate(),
-            contextFromState: (s) =>
-                <String, Object?>{'coupon': s.uri.queryParameters['coupon']},
+            contextFromState: (s) => <String, Object?>{
+              'coupon': s.uri.queryParameters['coupon'],
+            },
           ),
         ],
       );
@@ -190,8 +209,9 @@ void main() {
   });
 
   group('GateRoute.redirect / gateRedirect', () {
-    testWidgets('deep link to gate path resolves to chosen route',
-        (tester) async {
+    testWidgets('deep link to gate path resolves to chosen route', (
+      tester,
+    ) async {
       AgentGate.configure(decider: _Fixed('exp'));
       final router = _router(
         initial: '/checkout',
@@ -207,8 +227,9 @@ void main() {
       expect(router.state.matchedLocation, '/exp');
     });
 
-    testWidgets('falls back to the fallback route when decider is missing',
-        (tester) async {
+    testWidgets('falls back to the fallback route when decider is missing', (
+      tester,
+    ) async {
       // No decider configured → AgentGate.decide returns the fallback.
       final router = _router(
         initial: '/checkout',

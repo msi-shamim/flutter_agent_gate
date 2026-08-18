@@ -50,7 +50,7 @@ class HttpDecider implements AgentDecider {
 
   /// Override if your backend wraps the decision, e.g. `{"data": {...}}`.
   final Map<String, Object?> Function(Map<String, Object?> body)?
-      decodeResponse;
+  decodeResponse;
 
   final http.Client _client;
 
@@ -71,8 +71,10 @@ class HttpDecider implements AgentDecider {
     };
     if (signingSecret != null) {
       final ts = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
-      final mac = Hmac(sha256, utf8.encode(signingSecret!))
-          .convert(utf8.encode('$ts.$body'));
+      final mac = Hmac(
+        sha256,
+        utf8.encode(signingSecret!),
+      ).convert(utf8.encode('$ts.$body'));
       hdrs['x-agentgate-timestamp'] = ts;
       hdrs['x-agentgate-signature'] = 'sha256=$mac';
     }

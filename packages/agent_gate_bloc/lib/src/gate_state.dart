@@ -56,6 +56,10 @@ final class GateDecided extends GateState {
   bool get isFallback => decision.source == DecisionSource.fallback;
 
   @override
-  List<Object?> get props =>
-      <Object?>[gate.id, decision.candidateId, decision.source, candidate.id];
+  List<Object?> get props => <Object?>[
+    gate.id,
+    decision.candidateId,
+    decision.source,
+    candidate.id,
+  ];
 }

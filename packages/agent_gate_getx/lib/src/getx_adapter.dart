@@ -52,20 +52,30 @@ class GetxAdapter implements NavigationAdapter {
     GateDecision decision,
   ) {
     final defaultArgs = GateArguments(decision: decision, candidate: candidate);
-    final args =
-        argumentsBuilder == null ? defaultArgs : argumentsBuilder!(defaultArgs);
+    final args = argumentsBuilder == null
+        ? defaultArgs
+        : argumentsBuilder!(defaultArgs);
 
     final route = candidate.route;
     if (route != null) {
       // GetX returns Future<T?>? — null when navigation is a no-op (e.g.
       // duplicate route prevented). Normalise so callers always get a future.
       final Future<Object?>? f = switch (mode) {
-        GetxNavigationMode.to =>
-          Get.toNamed<Object?>(route, arguments: args, id: id),
-        GetxNavigationMode.off =>
-          Get.offNamed<Object?>(route, arguments: args, id: id),
-        GetxNavigationMode.offAll =>
-          Get.offAllNamed<Object?>(route, arguments: args, id: id),
+        GetxNavigationMode.to => Get.toNamed<Object?>(
+          route,
+          arguments: args,
+          id: id,
+        ),
+        GetxNavigationMode.off => Get.offNamed<Object?>(
+          route,
+          arguments: args,
+          id: id,
+        ),
+        GetxNavigationMode.offAll => Get.offAllNamed<Object?>(
+          route,
+          arguments: args,
+          id: id,
+        ),
       };
       return f ?? Future<Object?>.value(null);
     }
@@ -77,23 +87,23 @@ class GetxAdapter implements NavigationAdapter {
       final name = '/${candidate.id}';
       final Future<Object?>? f = switch (mode) {
         GetxNavigationMode.to => Get.to<Object?>(
-            () => Builder(builder: builder),
-            routeName: name,
-            arguments: args,
-            id: id,
-          ),
+          () => Builder(builder: builder),
+          routeName: name,
+          arguments: args,
+          id: id,
+        ),
         GetxNavigationMode.off => Get.off<Object?>(
-            () => Builder(builder: builder),
-            routeName: name,
-            arguments: args,
-            id: id,
-          ),
+          () => Builder(builder: builder),
+          routeName: name,
+          arguments: args,
+          id: id,
+        ),
         GetxNavigationMode.offAll => Get.offAll<Object?>(
-            () => Builder(builder: builder),
-            routeName: name,
-            arguments: args,
-            id: id,
-          ),
+          () => Builder(builder: builder),
+          routeName: name,
+          arguments: args,
+          id: id,
+        ),
       };
       return f ?? Future<Object?>.value(null);
     }

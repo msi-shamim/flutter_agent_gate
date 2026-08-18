@@ -72,8 +72,12 @@ class RouteNameAdapter implements NavigationAdapter {
   const RouteNameAdapter(this.go);
 
   /// Called with the route string.
-  final Future<Object?> Function(BuildContext? context, String route,
-      GateCandidate candidate) go;
+  final Future<Object?> Function(
+    BuildContext? context,
+    String route,
+    GateCandidate candidate,
+  )
+  go;
 
   @override
   Future<Object?> navigate(
@@ -103,6 +107,5 @@ class CallbackAdapter implements NavigationAdapter {
     BuildContext? context,
     GateCandidate candidate,
     GateDecision decision,
-  ) =>
-      onNavigate(context, candidate, decision);
+  ) => onNavigate(context, candidate, decision);
 }

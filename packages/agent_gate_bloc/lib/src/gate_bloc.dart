@@ -14,7 +14,10 @@ sealed class GateEvent extends Equatable {
 /// Ask the bloc to decide [gate].
 final class GateDecideRequested extends GateEvent {
   /// Creates the event.
-  const GateDecideRequested(this.gate, {this.extra = const <String, Object?>{}});
+  const GateDecideRequested(
+    this.gate, {
+    this.extra = const <String, Object?>{},
+  });
 
   /// The gate.
   final Gate gate;
@@ -43,11 +46,9 @@ final class GateReset extends GateEvent {
 /// `bloc_concurrency`) to change that policy.
 class GateBloc extends Bloc<GateEvent, GateState> {
   /// Creates the bloc in [GateIdle].
-  GateBloc({
-    AgentGate? agentGate,
-    EventTransformer<GateEvent>? transformer,
-  })  : _gate = agentGate ?? AgentGate.instance,
-        super(const GateIdle()) {
+  GateBloc({AgentGate? agentGate, EventTransformer<GateEvent>? transformer})
+    : _gate = agentGate ?? AgentGate.instance,
+      super(const GateIdle()) {
     on<GateEvent>(
       (e, emit) => switch (e) {
         GateDecideRequested() => _onDecide(e, emit),
@@ -61,15 +62,11 @@ class GateBloc extends Bloc<GateEvent, GateState> {
   static Stream<GateEvent> _sequential(
     Stream<GateEvent> events,
     EventMapper<GateEvent> mapper,
-  ) =>
-      events.asyncExpand(mapper);
+  ) => events.asyncExpand(mapper);
 
   final AgentGate _gate;
 
-  Future<void> _onDecide(
-    GateDecideRequested e,
-    Emitter<GateState> emit,
-  ) async {
+  Future<void> _onDecide(GateDecideRequested e, Emitter<GateState> emit) async {
     emit(GateDeciding(e.gate, extra: e.extra));
     final decision = await _gate.decide(e.gate, extra: e.extra);
     final candidate =

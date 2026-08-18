@@ -37,7 +37,7 @@ class GatePage extends StatefulWidget {
 
   /// Callback with the decision.
   final void Function(GateDecision decision, GateCandidate candidate)?
-      onDecided;
+  onDecided;
 
   @override
   State<GatePage> createState() => _GatePageState();
@@ -63,13 +63,15 @@ class _GatePageState extends State<GatePage> {
               const AgentLoadingView();
         }
         final decision = snap.data!;
-        final candidate = widget.gate.candidate(decision.candidateId) ??
+        final candidate =
+            widget.gate.candidate(decision.candidateId) ??
             widget.gate.fallbackCandidate;
         widget.onDecided?.call(decision, candidate);
         final b = candidate.builder;
         if (b == null) {
           return ErrorWidget.withDetails(
-            message: 'GatePage: candidate "${candidate.id}" has no builder. '
+            message:
+                'GatePage: candidate "${candidate.id}" has no builder. '
                 'Provide a builder or use AgentGate.navigate with a router adapter.',
           );
         }
@@ -171,7 +173,8 @@ class TrackedTap extends StatelessWidget {
 /// and name your routes; then you don't need [TrackedPage].
 class GateNavigatorObserver extends NavigatorObserver {
   /// Creates the observer.
-  GateNavigatorObserver({BehaviorTracker? tracker}) : _tracker = tracker; // ignore: prefer_initializing_formals
+  GateNavigatorObserver({BehaviorTracker? tracker})
+    : _tracker = tracker; // ignore: prefer_initializing_formals
 
   final BehaviorTracker? _tracker;
   BehaviorTracker get _t => _tracker ?? AgentGate.instance.tracker;

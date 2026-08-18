@@ -54,14 +54,14 @@ class GateCandidate {
   /// Serializes the candidate for a decider payload. Widget builders are
   /// intentionally omitted.
   Map<String, Object?> toJson() => <String, Object?>{
-        'id': id,
-        'label': label,
-        'description': description,
-        if (route != null) 'route': route,
-        if (tags.isNotEmpty) 'tags': tags,
-        'priority': priority,
-        if (metadata.isNotEmpty) 'metadata': metadata,
-      };
+    'id': id,
+    'label': label,
+    'description': description,
+    if (route != null) 'route': route,
+    if (tags.isNotEmpty) 'tags': tags,
+    'priority': priority,
+    if (metadata.isNotEmpty) 'metadata': metadata,
+  };
 
   @override
   String toString() => 'GateCandidate($id)';

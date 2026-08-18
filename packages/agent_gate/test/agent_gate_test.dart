@@ -5,32 +5,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Gate _gate({GateConfig? config, AgentDecider? decider}) => Gate(
-      id: 'a_to_b',
-      from: 'A',
-      fallback: 'b0',
-      config: config,
-      decider: decider,
-      candidates: <GateCandidate>[
-        GateCandidate(
-          id: 'b0',
-          label: 'B0',
-          description: 'default',
-          builder: (_) => const Text('B0'),
-        ),
-        GateCandidate(
-          id: 'b1',
-          label: 'B1',
-          description: 'premium',
-          builder: (_) => const Text('B1'),
-        ),
-        GateCandidate(
-          id: 'b2',
-          label: 'B2',
-          description: 'step-up',
-          builder: (_) => const Text('B2'),
-        ),
-      ],
-    );
+  id: 'a_to_b',
+  from: 'A',
+  fallback: 'b0',
+  config: config,
+  decider: decider,
+  candidates: <GateCandidate>[
+    GateCandidate(
+      id: 'b0',
+      label: 'B0',
+      description: 'default',
+      builder: (_) => const Text('B0'),
+    ),
+    GateCandidate(
+      id: 'b1',
+      label: 'B1',
+      description: 'premium',
+      builder: (_) => const Text('B1'),
+    ),
+    GateCandidate(
+      id: 'b2',
+      label: 'B2',
+      description: 'step-up',
+      builder: (_) => const Text('B2'),
+    ),
+  ],
+);
 
 class _FixedDecider implements AgentDecider {
   _FixedDecider(this.id, {this.confidence = 0.9, this.delay});
@@ -75,8 +75,7 @@ class _FlakyDecider implements AgentDecider {
     if (failuresBeforeSuccess-- > 0) {
       throw const DeciderTransientException('boom');
     }
-    return const GateDecision(
-        candidateId: 'b1', source: DecisionSource.agent);
+    return const GateDecision(candidateId: 'b1', source: DecisionSource.agent);
   }
 }
 
@@ -90,16 +89,26 @@ void main() {
         throwsArgumentError,
       );
       expect(
-        () => Gate(id: 'x', from: 'A', fallback: 'a', candidates: const [
-          GateCandidate(id: 'a', label: 'a', description: ''),
-          GateCandidate(id: 'a', label: 'a', description: ''),
-        ]),
+        () => Gate(
+          id: 'x',
+          from: 'A',
+          fallback: 'a',
+          candidates: const [
+            GateCandidate(id: 'a', label: 'a', description: ''),
+            GateCandidate(id: 'a', label: 'a', description: ''),
+          ],
+        ),
         throwsArgumentError,
       );
       expect(
-        () => Gate(id: 'x', from: 'A', fallback: 'zzz', candidates: const [
-          GateCandidate(id: 'a', label: 'a', description: ''),
-        ]),
+        () => Gate(
+          id: 'x',
+          from: 'A',
+          fallback: 'zzz',
+          candidates: const [
+            GateCandidate(id: 'a', label: 'a', description: ''),
+          ],
+        ),
         throwsArgumentError,
       );
       final many = List.generate(
@@ -112,9 +121,12 @@ void main() {
       );
       // exactly 1000 is fine
       expect(
-        Gate(id: 'x', from: 'A', fallback: 'c0', candidates: many.sublist(0, 1000))
-            .candidates
-            .length,
+        Gate(
+          id: 'x',
+          from: 'A',
+          fallback: 'c0',
+          candidates: many.sublist(0, 1000),
+        ).candidates.length,
         1000,
       );
     });
@@ -164,8 +176,9 @@ void main() {
 
     test('enforces min confidence', () async {
       AgentGate.configure(decider: _FixedDecider('b1', confidence: 0.3));
-      final d = await AgentGate.instance
-          .decide(_gate(config: const GateConfig.risk()));
+      final d = await AgentGate.instance.decide(
+        _gate(config: const GateConfig.risk()),
+      );
       expect(d.candidateId, 'b0');
       expect(d.reason, contains('confidence'));
     });
@@ -174,7 +187,9 @@ void main() {
       final flaky = _FlakyDecider(failuresBeforeSuccess: 1);
       AgentGate.configure(decider: flaky);
       final d = await AgentGate.instance.decide(
-        _gate(config: const GateConfig(maxRetries: 2, retryDelay: Duration.zero)),
+        _gate(
+          config: const GateConfig(maxRetries: 2, retryDelay: Duration.zero),
+        ),
       );
       expect(d.candidateId, 'b1');
       expect(flaky.calls, 2);
@@ -184,7 +199,9 @@ void main() {
       final flaky = _FlakyDecider(failuresBeforeSuccess: 5);
       AgentGate.configure(decider: flaky);
       final d = await AgentGate.instance.decide(
-        _gate(config: const GateConfig(maxRetries: 1, retryDelay: Duration.zero)),
+        _gate(
+          config: const GateConfig(maxRetries: 1, retryDelay: Duration.zero),
+        ),
       );
       expect(d.source, DecisionSource.fallback);
       expect(flaky.calls, 2);
@@ -215,14 +232,18 @@ void main() {
           fixed,
         ]),
       );
-      final risky = await AgentGate.instance
-          .decide(_gate(), extra: {'risk_score': 95});
+      final risky = await AgentGate.instance.decide(
+        _gate(),
+        extra: {'risk_score': 95},
+      );
       expect(risky.candidateId, 'b2');
       expect(risky.source, DecisionSource.rule);
       expect(fixed.calls, 0);
 
-      final normal = await AgentGate.instance
-          .decide(_gate(), extra: {'risk_score': 10});
+      final normal = await AgentGate.instance.decide(
+        _gate(),
+        extra: {'risk_score': 10},
+      );
       expect(normal.candidateId, 'b1');
       expect(fixed.calls, 1);
     });
@@ -233,9 +254,7 @@ void main() {
       AgentGate.configure(
         decider: _FixedDecider('nope'),
         auditSink: sink,
-        observers: [
-          _Obs((e) => events.add(e)),
-        ],
+        observers: [_Obs((e) => events.add(e))],
       );
       await AgentGate.instance.decide(_gate());
       expect(sink.entries, hasLength(1));
@@ -250,7 +269,9 @@ void main() {
         decider: CallbackDecider((r) {
           seen = r;
           return const GateDecision(
-              candidateId: 'b0', source: DecisionSource.agent);
+            candidateId: 'b0',
+            source: DecisionSource.agent,
+          );
         }),
         contextBuilder: () => {'email': 'a@b.c', 'tier': 'gold'},
       );
@@ -284,10 +305,15 @@ void main() {
     test('produces enum-constrained schema for all three providers', () async {
       AgentGate.configure(decider: _FixedDecider('b0'));
       GateRequest? req;
-      AgentGate.configure(decider: CallbackDecider((r) {
-        req = r;
-        return const GateDecision(candidateId: 'b0', source: DecisionSource.agent);
-      }));
+      AgentGate.configure(
+        decider: CallbackDecider((r) {
+          req = r;
+          return const GateDecision(
+            candidateId: 'b0',
+            source: DecisionSource.agent,
+          );
+        }),
+      );
       await AgentGate.instance.decide(_gate());
       const pb = PromptBuilder();
       final schema = pb.decisionSchema(req!);
@@ -300,10 +326,13 @@ void main() {
       final an = pb.anthropicRequest(req!);
       expect((an['tools']! as List<Object?>).single, contains('input_schema'));
       final ge = pb.geminiRequest(req!);
-      final decl = ((ge['tools']! as List<Object?>).single
-              as Map<String, Object?>)['function_declarations']! as List<Object?>;
-      final params = (decl.single as Map<String, Object?>)['parameters']!
-          as Map<String, Object?>;
+      final decl =
+          ((ge['tools']! as List<Object?>).single
+                  as Map<String, Object?>)['function_declarations']!
+              as List<Object?>;
+      final params =
+          (decl.single as Map<String, Object?>)['parameters']!
+              as Map<String, Object?>;
       expect(params.containsKey('additionalProperties'), isFalse);
       expect(pb.systemPrompt(req!), contains('choose_next_page'));
     });
@@ -335,18 +364,23 @@ void main() {
   });
 
   group('Widgets', () {
-    testWidgets('navigate() shows loading then pushes chosen page',
-        (tester) async {
+    testWidgets('navigate() shows loading then pushes chosen page', (
+      tester,
+    ) async {
       AgentGate.configure(
         decider: _FixedDecider('b1', delay: const Duration(milliseconds: 100)),
       );
       late BuildContext ctx;
-      await tester.pumpWidget(MaterialApp(
-        home: Builder(builder: (c) {
-          ctx = c;
-          return const Text('A');
-        }),
-      ));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (c) {
+              ctx = c;
+              return const Text('A');
+            },
+          ),
+        ),
+      );
       final f = AgentGate.instance.navigate(_gate(), context: ctx);
       await tester.pump(const Duration(milliseconds: 10));
       expect(find.byType(AgentLoadingView), findsOneWidget);
@@ -368,17 +402,16 @@ void main() {
 
     testWidgets('TrackedPage records enter/exit', (tester) async {
       AgentGate.instance.tracker.consent.grant();
-      await tester.pumpWidget(const MaterialApp(
-        home: TrackedPage(id: 'A', child: Text('A')),
-      ));
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: TrackedPage(id: 'A', child: Text('A')),
+        ),
+      );
       expect(AgentGate.instance.tracker.currentPage, 'A');
       await tester.pumpWidget(const MaterialApp(home: Text('other')));
       expect(AgentGate.instance.tracker.currentPage, isNull);
       expect(
-        AgentGate.instance.tracker
-            .eventsFor('A')
-            .map((e) => e.type)
-            .toList(),
+        AgentGate.instance.tracker.eventsFor('A').map((e) => e.type).toList(),
         [BehaviorEventType.pageEnter, BehaviorEventType.pageExit],
       );
     });

@@ -39,6 +39,7 @@ class GateOutcome {
       Object.hash(gate.id, decision.candidateId, decision.source);
 
   @override
-  String toString() => 'GateOutcome(${gate.id} → ${candidate.id}, '
+  String toString() =>
+      'GateOutcome(${gate.id} → ${candidate.id}, '
       '${decision.source.name})';
 }

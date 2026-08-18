@@ -54,17 +54,17 @@ class GateAuditEntry {
 
   /// JSON form.
   Map<String, Object?> toJson() => <String, Object?>{
-        'request_id': requestId,
-        'gate_id': gateId,
-        'from_page': fromPage,
-        'profile': profile,
-        'decider': decider,
-        'candidates': candidateIds,
-        'decision': decision.toJson(),
-        'at': at.toIso8601String(),
-        if (error != null) 'error': error,
-        if (contextHash != null) 'context_hash': contextHash,
-      };
+    'request_id': requestId,
+    'gate_id': gateId,
+    'from_page': fromPage,
+    'profile': profile,
+    'decider': decider,
+    'candidates': candidateIds,
+    'decision': decision.toJson(),
+    'at': at.toIso8601String(),
+    if (error != null) 'error': error,
+    if (contextHash != null) 'context_hash': contextHash,
+  };
 }
 
 /// Receives audit entries. Implement to ship to your SIEM / analytics /

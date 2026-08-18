@@ -21,7 +21,8 @@ import 'gate_outcome.dart';
 class GateNotifier extends AsyncNotifier<GateOutcome?> {
   /// Creates the notifier. [agentGate] defaults to the global instance and is
   /// injectable for tests.
-  GateNotifier({AgentGate? agentGate}) : _gate = agentGate ?? AgentGate.instance;
+  GateNotifier({AgentGate? agentGate})
+    : _gate = agentGate ?? AgentGate.instance;
 
   final AgentGate _gate;
   int _seq = 0;
@@ -59,8 +60,11 @@ class GateNotifier extends AsyncNotifier<GateOutcome?> {
     final my = ++_seq;
     state = const AsyncLoading<GateOutcome?>();
     final r = await _gate.navigate(gate, context: context, extra: extra);
-    final outcome =
-        GateOutcome(gate: gate, decision: r.decision, candidate: r.candidate);
+    final outcome = GateOutcome(
+      gate: gate,
+      decision: r.decision,
+      candidate: r.candidate,
+    );
     if (my == _seq) state = AsyncData<GateOutcome?>(outcome);
     return outcome;
   }

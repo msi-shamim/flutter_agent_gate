@@ -160,8 +160,7 @@ class AgentGate {
   Future<void> prefetch(
     Gate gate, {
     Map<String, Object?> extra = const <String, Object?>{},
-  }) =>
-      decide(gate, extra: extra);
+  }) => decide(gate, extra: extra);
 
   /// Decide and navigate. Shows the loading UI (unless disabled) as an
   /// overlay while the decision is in flight.
@@ -270,7 +269,8 @@ class AgentGate {
       try {
         decision = await _withRetries(d, request, cfg).timeout(cfg.timeout);
         decision = decision.copyWith(latency: decision.latency ?? sw.elapsed);
-        if (cfg.cacheTtl != null && decision.source != DecisionSource.fallback) {
+        if (cfg.cacheTtl != null &&
+            decision.source != DecisionSource.fallback) {
           _cache[request.cacheKey] = _CachedDecision(decision, cfg.cacheTtl!);
         }
       } on TimeoutException {
@@ -294,7 +294,8 @@ class AgentGate {
       decision = GateDecision.fallback(gate.fallback, reason: error);
     } else if (decision.source == DecisionSource.agent &&
         decision.confidence < cfg.minConfidence) {
-      error = 'confidence ${decision.confidence.toStringAsFixed(2)} '
+      error =
+          'confidence ${decision.confidence.toStringAsFixed(2)} '
           '< ${cfg.minConfidence}';
       decision = GateDecision.fallback(
         gate.fallback,
@@ -311,23 +312,29 @@ class AgentGate {
       o.onDecision(request, decision);
     }
     try {
-      await auditSink.record(GateAuditEntry(
-        requestId: request.requestId,
-        gateId: gate.id,
-        fromPage: gate.from,
-        profile: cfg.profile.name,
-        decision: decision,
-        decider: d?.name ?? 'none',
-        at: DateTime.now().toUtc(),
-        candidateIds: gate.candidates.map((c) => c.id).toList(),
-        error: error,
-        contextHash: request.cacheKey,
-      ));
+      await auditSink.record(
+        GateAuditEntry(
+          requestId: request.requestId,
+          gateId: gate.id,
+          fromPage: gate.from,
+          profile: cfg.profile.name,
+          decision: decision,
+          decider: d?.name ?? 'none',
+          at: DateTime.now().toUtc(),
+          candidateIds: gate.candidates.map((c) => c.id).toList(),
+          error: error,
+          contextHash: request.cacheKey,
+        ),
+      );
     } catch (_) {
       // never let audit break navigation
     }
 
-    return GateResult(request: request, decision: decision, candidate: candidate);
+    return GateResult(
+      request: request,
+      decision: decision,
+      candidate: candidate,
+    );
   }
 
   Future<GateDecision> _withRetries(
@@ -380,10 +387,10 @@ class AgentGate {
   }
 
   Map<String, Object?> _device() => <String, Object?>{
-        'platform': defaultTargetPlatform.name,
-        'locale': ui.PlatformDispatcher.instance.locale.toLanguageTag(),
-        'debug': kDebugMode,
-      };
+    'platform': defaultTargetPlatform.name,
+    'locale': ui.PlatformDispatcher.instance.locale.toLanguageTag(),
+    'debug': kDebugMode,
+  };
 
   String _newRequestId() {
     final t = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
@@ -394,7 +401,7 @@ class AgentGate {
 
 class _CachedDecision {
   _CachedDecision(this.decision, Duration ttl)
-      : expiresAt = DateTime.now().add(ttl);
+    : expiresAt = DateTime.now().add(ttl);
   final GateDecision decision;
   final DateTime expiresAt;
   bool get isExpired => DateTime.now().isAfter(expiresAt);

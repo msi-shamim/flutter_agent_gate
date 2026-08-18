@@ -87,12 +87,12 @@ class BehaviorEvent {
 
   /// JSON form.
   Map<String, Object?> toJson() => <String, Object?>{
-        't': type.name,
-        'page': page,
-        if (target != null) 'target': target,
-        if (name != null) 'name': name,
-        if (value != null) 'value': value,
-        if (attributes.isNotEmpty) 'attrs': attributes,
-        'at': at.toIso8601String(),
-      };
+    't': type.name,
+    'page': page,
+    if (target != null) 'target': target,
+    if (name != null) 'name': name,
+    if (value != null) 'value': value,
+    if (attributes.isNotEmpty) 'attrs': attributes,
+    'at': at.toIso8601String(),
+  };
 }

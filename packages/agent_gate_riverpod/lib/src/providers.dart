@@ -21,10 +21,8 @@ import 'gate_outcome.dart';
 /// to pin one.
 ///
 /// To pass per-navigation `extra`, use [gateDecisionWithExtraProvider].
-final gateDecisionProvider =
-    FutureProvider.autoDispose.family<GateDecision, Gate>(
-  (ref, gate) => AgentGate.instance.decide(gate),
-);
+final gateDecisionProvider = FutureProvider.autoDispose
+    .family<GateDecision, Gate>((ref, gate) => AgentGate.instance.decide(gate));
 
 /// Key for [gateDecisionWithExtraProvider]. Equality is by gate id + a
 /// stable JSON-ish rendering of `extra`, so identical requests share a
@@ -49,19 +47,19 @@ class GateArgs {
   int get hashCode => Object.hash(gate.id, _key(extra));
 
   static String _key(Map<String, Object?> m) {
-    final entries = m.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final entries = m.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
     return entries.map((e) => '${e.key}=${e.value}').join('&');
   }
 }
 
 /// Like [gateDecisionProvider] but with per-navigation `extra` context.
-final gateDecisionWithExtraProvider =
-    FutureProvider.autoDispose.family<GateDecision, GateArgs>(
-  (ref, args) => AgentGate.instance.decide(args.gate, extra: args.extra),
-);
+final gateDecisionWithExtraProvider = FutureProvider.autoDispose
+    .family<GateDecision, GateArgs>(
+      (ref, args) => AgentGate.instance.decide(args.gate, extra: args.extra),
+    );
 
 /// The on-demand notifier. Keep-alive so the last outcome survives widget
 /// rebuilds; call `reset()` after navigating if you want a clean slate.
-final gateNotifierProvider =
-    AsyncNotifierProvider<GateNotifier, GateOutcome?>(GateNotifier.new);
+final gateNotifierProvider = AsyncNotifierProvider<GateNotifier, GateOutcome?>(
+  GateNotifier.new,
+);

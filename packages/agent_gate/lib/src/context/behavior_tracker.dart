@@ -115,11 +115,8 @@ class BehaviorTracker extends ChangeNotifier with WidgetsBindingObserver {
       _quick(BehaviorEventType.fieldEdit, target: field, value: length);
 
   /// A validation error appeared on [field].
-  void validationError(String field, {String? code}) => _quick(
-        BehaviorEventType.validationError,
-        target: field,
-        name: code,
-      );
+  void validationError(String field, {String? code}) =>
+      _quick(BehaviorEventType.validationError, target: field, name: code);
 
   /// The user attempted an action (`pay`, `login`, `submit`).
   void attempt(String name, {Map<String, Object?> attributes = const {}}) =>
@@ -130,10 +127,10 @@ class BehaviorTracker extends ChangeNotifier with WidgetsBindingObserver {
 
   /// The attempt [name] failed with an optional [code].
   void failure(String name, {String? code}) => _quick(
-        BehaviorEventType.failure,
-        name: name,
-        attributes: code == null ? const {} : {'code': code},
-      );
+    BehaviorEventType.failure,
+    name: name,
+    attributes: code == null ? const {} : {'code': code},
+  );
 
   /// User navigated back.
   void back() => _quick(BehaviorEventType.back);
@@ -144,14 +141,13 @@ class BehaviorTracker extends ChangeNotifier with WidgetsBindingObserver {
     String? target,
     num? value,
     Map<String, Object?> attributes = const {},
-  }) =>
-      _quick(
-        BehaviorEventType.custom,
-        name: name,
-        target: target,
-        value: value,
-        attributes: attributes,
-      );
+  }) => _quick(
+    BehaviorEventType.custom,
+    name: name,
+    target: target,
+    value: value,
+    attributes: attributes,
+  );
 
   /// Records an already-built event.
   void add(BehaviorEvent event) => _record(event);
@@ -195,14 +191,16 @@ class BehaviorTracker extends ChangeNotifier with WidgetsBindingObserver {
   }) {
     final page = _currentPage;
     if (page == null) return;
-    _record(BehaviorEvent(
-      type: type,
-      page: page,
-      target: target,
-      name: name,
-      value: value,
-      attributes: attributes,
-    ));
+    _record(
+      BehaviorEvent(
+        type: type,
+        page: page,
+        target: target,
+        name: name,
+        value: value,
+        attributes: attributes,
+      ),
+    );
   }
 
   void _record(BehaviorEvent e) {

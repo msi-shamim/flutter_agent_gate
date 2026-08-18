@@ -155,20 +155,20 @@ class PageSessionSummary {
 
   /// JSON form.
   Map<String, Object?> toJson() => <String, Object?>{
-        'page': page,
-        'entered_at': enteredAt.toIso8601String(),
-        'dwell_ms': dwell.inMilliseconds,
-        'taps': tapCount,
-        'attempts': attemptCount,
-        'failures': failureCount,
-        'successes': successCount,
-        'validation_errors': validationErrorCount,
-        'backs': backCount,
-        'field_edits': fieldEditCount,
-        'max_scroll': maxScrollFraction,
-        if (hesitationMs != null) 'hesitation_ms': hesitationMs,
-        if (attemptsByName.isNotEmpty) 'attempts_by_name': attemptsByName,
-        if (tapsByTarget.isNotEmpty) 'taps_by_target': tapsByTarget,
-        'events': eventCount,
-      };
+    'page': page,
+    'entered_at': enteredAt.toIso8601String(),
+    'dwell_ms': dwell.inMilliseconds,
+    'taps': tapCount,
+    'attempts': attemptCount,
+    'failures': failureCount,
+    'successes': successCount,
+    'validation_errors': validationErrorCount,
+    'backs': backCount,
+    'field_edits': fieldEditCount,
+    'max_scroll': maxScrollFraction,
+    if (hesitationMs != null) 'hesitation_ms': hesitationMs,
+    if (attemptsByName.isNotEmpty) 'attempts_by_name': attemptsByName,
+    if (tapsByTarget.isNotEmpty) 'taps_by_target': tapsByTarget,
+    'events': eventCount,
+  };
 }

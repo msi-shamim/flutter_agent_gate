@@ -56,8 +56,9 @@ class Redactor {
       final out = <String, Object?>{};
       v.forEach((Object? k, Object? val) {
         final key = k.toString();
-        out[key] =
-            lower.contains(key.toLowerCase()) ? placeholder : _walk(val, lower);
+        out[key] = lower.contains(key.toLowerCase())
+            ? placeholder
+            : _walk(val, lower);
       });
       return out;
     }

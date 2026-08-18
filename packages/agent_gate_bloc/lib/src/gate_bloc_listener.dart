@@ -84,15 +84,20 @@ class GateBlocListener<B extends BlocBase<GateState>> extends StatelessWidget {
           (prev is GateDeciding) != (curr is GateDeciding),
       builder: (context, state) {
         if (!showLoading || state is! GateDeciding) return child;
-        final reasoning =
-            AgentGate.instance.decider?.reasoning(_requestStubFor(state));
+        final reasoning = AgentGate.instance.decider?.reasoning(
+          _requestStubFor(state),
+        );
         return Stack(
           fit: StackFit.passthrough,
           children: <Widget>[
             child,
             Positioned.fill(
               child: AbsorbPointer(
-                child: AgentGate.instance.loadingBuilder?.call(context, reasoning) ??
+                child:
+                    AgentGate.instance.loadingBuilder?.call(
+                      context,
+                      reasoning,
+                    ) ??
                     AgentLoadingView(reasoning: reasoning),
               ),
             ),
@@ -108,12 +113,12 @@ class GateBlocListener<B extends BlocBase<GateState>> extends StatelessWidget {
   // common case: they stream generic progress) work; ones that need the real
   // request return null and the loader simply shows no reasoning text.
   GateRequest _requestStubFor(GateDeciding s) => GateRequest(
-        gateId: s.gate.id,
-        fromPage: s.gate.from,
-        candidates: s.gate.candidates,
-        context: GateContext.empty,
-        profile: (s.gate.config ?? AgentGate.instance.config).profile,
-        requestId: 'listener-preview',
-        timestamp: DateTime.now().toUtc(),
-      );
+    gateId: s.gate.id,
+    fromPage: s.gate.from,
+    candidates: s.gate.candidates,
+    context: GateContext.empty,
+    profile: (s.gate.config ?? AgentGate.instance.config).profile,
+    requestId: 'listener-preview',
+    timestamp: DateTime.now().toUtc(),
+  );
 }

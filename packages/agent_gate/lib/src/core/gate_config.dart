@@ -21,20 +21,20 @@ class GateConfig {
 
   /// Sensible defaults for fraud / risk routing.
   const GateConfig.risk()
-      : this(
-          profile: GateProfile.risk,
-          timeout: const Duration(seconds: 2),
-          maxRetries: 0,
-          minConfidence: 0.6,
-        );
+    : this(
+        profile: GateProfile.risk,
+        timeout: const Duration(seconds: 2),
+        maxRetries: 0,
+        minConfidence: 0.6,
+      );
 
   /// Sensible defaults for recommendation routing.
   const GateConfig.recommendation()
-      : this(
-          profile: GateProfile.recommendation,
-          timeout: const Duration(seconds: 6),
-          cacheTtl: const Duration(minutes: 10),
-        );
+    : this(
+        profile: GateProfile.recommendation,
+        timeout: const Duration(seconds: 6),
+        cacheTtl: const Duration(minutes: 10),
+      );
 
   /// Profile this gate runs under.
   final GateProfile profile;

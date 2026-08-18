@@ -29,17 +29,25 @@ class _Fixed implements AgentDecider {
 }
 
 Gate _gate() => Gate(
-      id: 'a_to_b',
-      from: 'A',
-      fallback: 'b0',
-      config: const GateConfig(showLoadingUi: false),
-      candidates: <GateCandidate>[
-        GateCandidate(
-            id: 'b0', label: 'B0', description: '', builder: (_) => const Text('B0')),
-        GateCandidate(
-            id: 'b1', label: 'B1', description: '', builder: (_) => const Text('B1')),
-      ],
-    );
+  id: 'a_to_b',
+  from: 'A',
+  fallback: 'b0',
+  config: const GateConfig(showLoadingUi: false),
+  candidates: <GateCandidate>[
+    GateCandidate(
+      id: 'b0',
+      label: 'B0',
+      description: '',
+      builder: (_) => const Text('B0'),
+    ),
+    GateCandidate(
+      id: 'b1',
+      label: 'B1',
+      description: '',
+      builder: (_) => const Text('B1'),
+    ),
+  ],
+);
 
 void main() {
   setUp(AgentGate.reset);
@@ -81,8 +89,11 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
       final states = <AsyncValue<GateOutcome?>>[];
-      container.listen(gateNotifierProvider, (_, s) => states.add(s),
-          fireImmediately: true);
+      container.listen(
+        gateNotifierProvider,
+        (_, s) => states.add(s),
+        fireImmediately: true,
+      );
       await container.read(gateNotifierProvider.future); // initial null
       final n = container.read(gateNotifierProvider.notifier);
       final o = await n.decide(_gate());
@@ -98,7 +109,9 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
       await container.read(gateNotifierProvider.future);
-      final o = await container.read(gateNotifierProvider.notifier).decide(_gate());
+      final o = await container
+          .read(gateNotifierProvider.notifier)
+          .decide(_gate());
       expect(o.isFallback, isTrue);
       expect(container.read(gateNotifierProvider).hasError, isFalse);
     });
@@ -111,17 +124,24 @@ void main() {
           if (calls == 1) {
             await Future<void>.delayed(const Duration(milliseconds: 80));
             return const GateDecision(
-                candidateId: 'b0', source: DecisionSource.agent);
+              candidateId: 'b0',
+              source: DecisionSource.agent,
+            );
           }
           return const GateDecision(
-              candidateId: 'b1', source: DecisionSource.agent);
+            candidateId: 'b1',
+            source: DecisionSource.agent,
+          );
         }),
       );
       final container = ProviderContainer();
       addTearDown(container.dispose);
       await container.read(gateNotifierProvider.future);
       final n = container.read(gateNotifierProvider.notifier);
-      await Future.wait(<Future<GateOutcome>>[n.decide(_gate()), n.decide(_gate())]);
+      await Future.wait(<Future<GateOutcome>>[
+        n.decide(_gate()),
+        n.decide(_gate()),
+      ]);
       expect(container.read(gateNotifierProvider).value!.candidate.id, 'b1');
     });
   });
@@ -134,10 +154,12 @@ void main() {
       );
       final container = ProviderContainer();
       addTearDown(container.dispose);
-      await tester.pumpWidget(UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(home: GateListener(child: Text('A'))),
-      ));
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: GateListener(child: Text('A'))),
+        ),
+      );
       await tester.pump();
       final f = container.read(gateNotifierProvider.notifier).decide(_gate());
       await tester.pump();
@@ -149,21 +171,24 @@ void main() {
       expect(find.byType(AgentLoadingView), findsNothing);
     });
 
-    testWidgets('re-fires when the same outcome lands again after loading',
-        (tester) async {
+    testWidgets('re-fires when the same outcome lands again after loading', (
+      tester,
+    ) async {
       var navs = 0;
       AgentGate.configure(decider: _Fixed('b1'));
       final container = ProviderContainer();
       addTearDown(container.dispose);
-      await tester.pumpWidget(UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          home: GateListener(
-            onDecided: (_, _, _) => navs++,
-            child: const Text('A'),
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: GateListener(
+              onDecided: (_, _, _) => navs++,
+              child: const Text('A'),
+            ),
           ),
         ),
-      ));
+      );
       await tester.pump();
       final n = container.read(gateNotifierProvider.notifier);
       await n.decide(_gate());
@@ -173,16 +198,19 @@ void main() {
       expect(navs, 2);
     });
 
-    testWidgets('navigateOnFallback=false suppresses fallback navigation',
-        (tester) async {
+    testWidgets('navigateOnFallback=false suppresses fallback navigation', (
+      tester,
+    ) async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
-      await tester.pumpWidget(UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(
-          home: GateListener(navigateOnFallback: false, child: Text('A')),
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(
+            home: GateListener(navigateOnFallback: false, child: Text('A')),
+          ),
         ),
-      ));
+      );
       await tester.pump();
       await container.read(gateNotifierProvider.notifier).decide(_gate());
       await tester.pumpAndSettle();

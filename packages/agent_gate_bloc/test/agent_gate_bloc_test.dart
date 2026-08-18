@@ -28,16 +28,24 @@ class _Fixed implements AgentDecider {
 }
 
 Gate _gate() => Gate(
-      id: 'a_to_b',
-      from: 'A',
-      fallback: 'b0',
-      candidates: <GateCandidate>[
-        GateCandidate(
-            id: 'b0', label: 'B0', description: '', builder: (_) => const Text('B0')),
-        GateCandidate(
-            id: 'b1', label: 'B1', description: '', builder: (_) => const Text('B1')),
-      ],
-    );
+  id: 'a_to_b',
+  from: 'A',
+  fallback: 'b0',
+  candidates: <GateCandidate>[
+    GateCandidate(
+      id: 'b0',
+      label: 'B0',
+      description: '',
+      builder: (_) => const Text('B0'),
+    ),
+    GateCandidate(
+      id: 'b1',
+      label: 'B1',
+      description: '',
+      builder: (_) => const Text('B1'),
+    ),
+  ],
+);
 
 void main() {
   setUp(AgentGate.reset);
@@ -49,9 +57,11 @@ void main() {
       build: GateCubit.new,
       act: (c) => c.decide(_gate(), extra: <String, Object?>{'k': 1}),
       expect: () => <Matcher>[
-        isA<GateDeciding>()
-            .having((s) => s.gate.id, 'gate', 'a_to_b')
-            .having((s) => s.extra, 'extra', <String, Object?>{'k': 1}),
+        isA<GateDeciding>().having((s) => s.gate.id, 'gate', 'a_to_b').having(
+          (s) => s.extra,
+          'extra',
+          <String, Object?>{'k': 1},
+        ),
         isA<GateDecided>()
             .having((s) => s.candidate.id, 'candidate', 'b1')
             .having((s) => s.isFallback, 'isFallback', isFalse),
@@ -94,10 +104,14 @@ void main() {
           if (calls == 1) {
             await Future<void>.delayed(const Duration(milliseconds: 80));
             return const GateDecision(
-                candidateId: 'b0', source: DecisionSource.agent);
+              candidateId: 'b0',
+              source: DecisionSource.agent,
+            );
           }
           return const GateDecision(
-              candidateId: 'b1', source: DecisionSource.agent);
+            candidateId: 'b1',
+            source: DecisionSource.agent,
+          );
         }),
       );
       final c = GateCubit();
@@ -126,19 +140,22 @@ void main() {
   });
 
   group('GateBlocListener', () {
-    testWidgets('shows loading while deciding then navigates via adapter',
-        (tester) async {
+    testWidgets('shows loading while deciding then navigates via adapter', (
+      tester,
+    ) async {
       AgentGate.configure(
         decider: _Fixed('b1', delay: const Duration(milliseconds: 100)),
         adapter: const NavigatorAdapter(),
       );
       final cubit = GateCubit();
-      await tester.pumpWidget(MaterialApp(
-        home: BlocProvider<GateCubit>.value(
-          value: cubit,
-          child: const GateBlocListener<GateCubit>(child: Text('A')),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider<GateCubit>.value(
+            value: cubit,
+            child: const GateBlocListener<GateCubit>(child: Text('A')),
+          ),
         ),
-      ));
+      );
       expect(find.text('A'), findsOneWidget);
 
       final f = cubit.decide(_gate());
@@ -157,15 +174,17 @@ void main() {
       AgentGate.configure(decider: _Fixed('b1'));
       final cubit = GateCubit();
       GateDecided? got;
-      await tester.pumpWidget(MaterialApp(
-        home: BlocProvider<GateCubit>.value(
-          value: cubit,
-          child: GateBlocListener<GateCubit>(
-            onDecided: (_, s) => got = s,
-            child: const Text('A'),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider<GateCubit>.value(
+            value: cubit,
+            child: GateBlocListener<GateCubit>(
+              onDecided: (_, s) => got = s,
+              child: const Text('A'),
+            ),
           ),
         ),
-      ));
+      );
       await cubit.decide(_gate());
       await tester.pumpAndSettle();
       expect(got!.candidate.id, 'b1');
@@ -173,19 +192,22 @@ void main() {
       await cubit.close();
     });
 
-    testWidgets('navigateOnFallback=false suppresses fallback navigation',
-        (tester) async {
+    testWidgets('navigateOnFallback=false suppresses fallback navigation', (
+      tester,
+    ) async {
       // No decider → fallback.
       final cubit = GateCubit();
-      await tester.pumpWidget(MaterialApp(
-        home: BlocProvider<GateCubit>.value(
-          value: cubit,
-          child: const GateBlocListener<GateCubit>(
-            navigateOnFallback: false,
-            child: Text('A'),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider<GateCubit>.value(
+            value: cubit,
+            child: const GateBlocListener<GateCubit>(
+              navigateOnFallback: false,
+              child: Text('A'),
+            ),
           ),
         ),
-      ));
+      );
       await cubit.decide(_gate());
       await tester.pumpAndSettle();
       expect(find.text('A'), findsOneWidget);

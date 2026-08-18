@@ -80,8 +80,9 @@ class GoRouterAdapter implements NavigationAdapter {
       );
     }
     final defaultExtra = GateExtra(decision: decision, candidate: candidate);
-    final extra =
-        extraBuilder == null ? defaultExtra : extraBuilder!(defaultExtra);
+    final extra = extraBuilder == null
+        ? defaultExtra
+        : extraBuilder!(defaultExtra);
 
     // NOTE: push* return a future that completes on pop; go/replace return
     // void. We normalise to Future<Object?> and AgentGate.navigate never

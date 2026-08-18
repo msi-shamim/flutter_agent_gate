@@ -21,8 +21,8 @@ import 'gate_state.dart';
 class GateCubit extends Cubit<GateState> {
   /// Creates the cubit in [GateIdle].
   GateCubit({AgentGate? agentGate})
-      : _gate = agentGate ?? AgentGate.instance,
-        super(const GateIdle());
+    : _gate = agentGate ?? AgentGate.instance,
+      super(const GateIdle());
 
   final AgentGate _gate;
   int _seq = 0;
@@ -36,9 +36,13 @@ class GateCubit extends Cubit<GateState> {
     final my = ++_seq;
     emit(GateDeciding(gate, extra: extra));
     final decision = await _gate.decide(gate, extra: extra);
-    final candidate = gate.candidate(decision.candidateId) ?? gate.fallbackCandidate;
-    final decided =
-        GateDecided(gate: gate, decision: decision, candidate: candidate);
+    final candidate =
+        gate.candidate(decision.candidateId) ?? gate.fallbackCandidate;
+    final decided = GateDecided(
+      gate: gate,
+      decision: decision,
+      candidate: candidate,
+    );
     // Only emit if no newer decide() started meanwhile and we're still open.
     if (my == _seq && !isClosed) emit(decided);
     return decided;

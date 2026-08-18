@@ -59,16 +59,15 @@ class GateContext {
     Map<String, Object?>? baseline,
     Map<String, Object?>? device,
     bool? consentGranted,
-  }) =>
-      GateContext(
-        currentPage: currentPage ?? this.currentPage,
-        history: history ?? this.history,
-        rawEvents: rawEvents ?? this.rawEvents,
-        app: app ?? this.app,
-        baseline: baseline ?? this.baseline,
-        device: device ?? this.device,
-        consentGranted: consentGranted ?? this.consentGranted,
-      );
+  }) => GateContext(
+    currentPage: currentPage ?? this.currentPage,
+    history: history ?? this.history,
+    rawEvents: rawEvents ?? this.rawEvents,
+    app: app ?? this.app,
+    baseline: baseline ?? this.baseline,
+    device: device ?? this.device,
+    consentGranted: consentGranted ?? this.consentGranted,
+  );
 
   /// Merges [extra] into [app].
   GateContext withApp(Map<String, Object?> extra) =>
@@ -76,14 +75,13 @@ class GateContext {
 
   /// JSON form.
   Map<String, Object?> toJson() => <String, Object?>{
-        'consent': consentGranted,
-        if (currentPage != null) 'current_page': currentPage!.toJson(),
-        if (history.isNotEmpty)
-          'history': history.map((h) => h.toJson()).toList(),
-        if (rawEvents.isNotEmpty)
-          'events': rawEvents.map((e) => e.toJson()).toList(),
-        if (app.isNotEmpty) 'app': app,
-        if (baseline != null) 'baseline': baseline,
-        if (device.isNotEmpty) 'device': device,
-      };
+    'consent': consentGranted,
+    if (currentPage != null) 'current_page': currentPage!.toJson(),
+    if (history.isNotEmpty) 'history': history.map((h) => h.toJson()).toList(),
+    if (rawEvents.isNotEmpty)
+      'events': rawEvents.map((e) => e.toJson()).toList(),
+    if (app.isNotEmpty) 'app': app,
+    if (baseline != null) 'baseline': baseline,
+    if (device.isNotEmpty) 'device': device,
+  };
 }

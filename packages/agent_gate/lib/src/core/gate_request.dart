@@ -52,16 +52,16 @@ class GateRequest {
 
   /// Serializes to the canonical `agent_gate/v1` payload.
   Map<String, Object?> toJson() => <String, Object?>{
-        'schema': 'agent_gate/v1',
-        'request_id': requestId,
-        'timestamp': timestamp.toUtc().toIso8601String(),
-        'gate_id': gateId,
-        'from_page': fromPage,
-        'profile': profile.name,
-        if (instructions != null) 'instructions': instructions,
-        'candidates': candidates.map((c) => c.toJson()).toList(),
-        'context': context.toJson(),
-      };
+    'schema': 'agent_gate/v1',
+    'request_id': requestId,
+    'timestamp': timestamp.toUtc().toIso8601String(),
+    'gate_id': gateId,
+    'from_page': fromPage,
+    'profile': profile.name,
+    if (instructions != null) 'instructions': instructions,
+    'candidates': candidates.map((c) => c.toJson()).toList(),
+    'context': context.toJson(),
+  };
 
   /// Stable hash for cache keys — excludes request id and timestamp.
   String get cacheKey {

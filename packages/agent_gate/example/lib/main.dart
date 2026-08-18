@@ -62,39 +62,54 @@ class DemoDecider implements AgentDecider {
     switch (request.gateId) {
       case 'cart_to_checkout':
         if (failures >= 2) {
-          return _d('checkout_assisted', 0.86,
-              'User failed to apply a coupon $failures times — assisted flow.');
+          return _d(
+            'checkout_assisted',
+            0.86,
+            'User failed to apply a coupon $failures times — assisted flow.',
+          );
         }
         if (dwellSec < 4 && taps <= 2) {
-          return _d('checkout_express', 0.78,
-              'Fast, decisive session (${dwellSec.toStringAsFixed(1)} s) — express.');
+          return _d(
+            'checkout_express',
+            0.78,
+            'Fast, decisive session (${dwellSec.toStringAsFixed(1)} s) — express.',
+          );
         }
         return _d('checkout_standard', 0.7, 'Typical session — standard flow.');
       case 'transfer_to_confirm':
         final anomalies = failures + (page?.backCount ?? 0);
         if (anomalies >= 2 || (page?.fieldEditCount ?? 0) > 6) {
-          return _d('confirm_stepup', 0.82,
-              'Repeated edits/back-navigation on a transfer page look anomalous.');
+          return _d(
+            'confirm_stepup',
+            0.82,
+            'Repeated edits/back-navigation on a transfer page look anomalous.',
+          );
         }
-        return _d('confirm_simple', 0.74, 'Behaviour consistent with baseline.');
+        return _d(
+          'confirm_simple',
+          0.74,
+          'Behaviour consistent with baseline.',
+        );
     }
     return _d(request.candidates.first.id, 0.5, 'default');
   }
 
   GateDecision _d(String id, double c, String why) => GateDecision(
-        candidateId: id,
-        source: DecisionSource.agent,
-        confidence: c,
-        reason: why,
-        model: 'demo',
-      );
+    candidateId: id,
+    source: DecisionSource.agent,
+    confidence: c,
+    reason: why,
+    model: 'demo',
+  );
 }
 
 class _LogObserver extends GateObserver {
   const _LogObserver();
   @override
   void onDecision(GateRequest request, GateDecision decision) {
-    debugPrint('[AgentGate] ${request.gateId} → $decision (${decision.reason})');
+    debugPrint(
+      '[AgentGate] ${request.gateId} → $decision (${decision.reason})',
+    );
   }
 }
 
@@ -105,13 +120,15 @@ final Gate checkoutGate = Gate(
   from: 'cart',
   fallback: 'checkout_standard',
   config: const GateConfig.recommendation().copyWith(cacheTtl: null),
-  instructions: 'Prefer the flow with the fewest steps unless the user '
+  instructions:
+      'Prefer the flow with the fewest steps unless the user '
       'showed signs of confusion.',
   candidates: <GateCandidate>[
     GateCandidate(
       id: 'checkout_express',
       label: 'Express checkout',
-      description: 'One-tap checkout with saved card & address. Best for '
+      description:
+          'One-tap checkout with saved card & address. Best for '
           'confident returning users who move fast.',
       builder: (_) => const ResultPage('Express checkout', Colors.green),
     ),
@@ -124,7 +141,8 @@ final Gate checkoutGate = Gate(
     GateCandidate(
       id: 'checkout_assisted',
       label: 'Assisted checkout',
-      description: 'Guided checkout with inline help and live chat. Best '
+      description:
+          'Guided checkout with inline help and live chat. Best '
           'when the user struggled (coupon failures, many back-navigations).',
       builder: (_) => const ResultPage('Assisted checkout', Colors.orange),
     ),
@@ -140,7 +158,8 @@ final Gate transferGate = Gate(
     GateCandidate(
       id: 'confirm_simple',
       label: 'Simple confirmation',
-      description: 'Confirm with biometric only. For behaviour consistent '
+      description:
+          'Confirm with biometric only. For behaviour consistent '
           'with the user baseline and low amounts.',
       tags: const <String>['low_friction'],
       builder: (_) => const ResultPage('Confirm (biometric)', Colors.teal),
@@ -148,7 +167,8 @@ final Gate transferGate = Gate(
     GateCandidate(
       id: 'confirm_stepup',
       label: 'Step-up verification',
-      description: 'OTP + security question. For anomalous behaviour, high '
+      description:
+          'OTP + security question. For anomalous behaviour, high '
           'amounts or new payees.',
       tags: const <String>['protective'],
       builder: (_) => const ResultPage('Step-up verification', Colors.red),
@@ -162,11 +182,11 @@ class DemoApp extends StatelessWidget {
   const DemoApp({super.key});
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'AgentGate demo',
-        theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-        navigatorObservers: <NavigatorObserver>[GateNavigatorObserver()],
-        home: const HomePage(),
-      );
+    title: 'AgentGate demo',
+    theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+    navigatorObservers: <NavigatorObserver>[GateNavigatorObserver()],
+    home: const HomePage(),
+  );
 }
 
 class HomePage extends StatefulWidget {
@@ -189,27 +209,33 @@ class _HomePageState extends State<HomePage> {
             title: const Text('Behavioural tracking consent'),
             subtitle: const Text('Off = only app context is sent'),
             value: _consent,
-            onChanged: (v) => setState(() =>
-                v ? AgentGate.instance.tracker.consent.grant()
-                  : AgentGate.instance.tracker.consent.revoke()),
+            onChanged: (v) => setState(
+              () => v
+                  ? AgentGate.instance.tracker.consent.grant()
+                  : AgentGate.instance.tracker.consent.revoke(),
+            ),
           ),
           const SizedBox(height: 16),
           FilledButton.icon(
             icon: const Icon(Icons.shopping_cart),
             label: const Text('E-commerce: cart → checkout'),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-              settings: const RouteSettings(name: 'cart'),
-              builder: (_) => const CartPage(),
-            )),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: 'cart'),
+                builder: (_) => const CartPage(),
+              ),
+            ),
           ),
           const SizedBox(height: 8),
           FilledButton.tonalIcon(
             icon: const Icon(Icons.account_balance),
             label: const Text('Banking: transfer → confirmation'),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-              settings: const RouteSettings(name: 'transfer'),
-              builder: (_) => const TransferPage(),
-            )),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                settings: const RouteSettings(name: 'transfer'),
+                builder: (_) => const TransferPage(),
+              ),
+            ),
           ),
           const SizedBox(height: 24),
           const Text(
@@ -244,8 +270,9 @@ class _CartPageState extends State<CartPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             const ListTile(
-                title: Text('Noise-cancelling headphones'),
-                trailing: Text('\$199')),
+              title: Text('Noise-cancelling headphones'),
+              trailing: Text('\$199'),
+            ),
             const ListTile(title: Text('USB-C cable'), trailing: Text('\$12')),
             const Divider(),
             OutlinedButton(
@@ -306,7 +333,8 @@ class _TransferPageState extends State<TransferPage> {
             ),
             const SizedBox(height: 12),
             const TextField(
-                decoration: InputDecoration(labelText: 'Payee (new)')),
+              decoration: InputDecoration(labelText: 'Payee (new)'),
+            ),
             const Spacer(),
             FilledButton(
               onPressed: () {
@@ -348,23 +376,30 @@ class ResultPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('You were routed here by AgentGate.',
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'You were routed here by AgentGate.',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 12),
             if (last != null) ...<Widget>[
               Text('Decision: ${last.decision.candidateId}'),
               Text('Source: ${last.decision.source.name}'),
-              Text('Confidence: ${last.decision.confidence.toStringAsFixed(2)}'),
+              Text(
+                'Confidence: ${last.decision.confidence.toStringAsFixed(2)}',
+              ),
               Text('Reason: ${last.decision.reason ?? '-'}'),
-              Text('Latency: ${last.decision.latency?.inMilliseconds ?? '-'} ms'),
+              Text(
+                'Latency: ${last.decision.latency?.inMilliseconds ?? '-'} ms',
+              ),
               const SizedBox(height: 8),
-              Text('Request ${last.requestId}',
-                  style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                'Request ${last.requestId}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
             const Spacer(),
             OutlinedButton(
-              onPressed: () =>
-                  Navigator.of(context).popUntil((r) => r.isFirst),
+              onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
               child: const Text('Back to start'),
             ),
           ],

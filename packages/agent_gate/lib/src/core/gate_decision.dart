@@ -31,12 +31,12 @@ class GateDecision {
 
   /// Convenience for a fallback decision.
   const GateDecision.fallback(String candidateId, {String? reason})
-      : this(
-          candidateId: candidateId,
-          source: DecisionSource.fallback,
-          confidence: 0,
-          reason: reason,
-        );
+    : this(
+        candidateId: candidateId,
+        source: DecisionSource.fallback,
+        confidence: 0,
+        reason: reason,
+      );
 
   /// Parses the canonical decider JSON `{candidate_id, confidence, reason}`.
   ///
@@ -48,7 +48,8 @@ class GateDecision {
     String? model,
     Duration? latency,
   }) {
-    final Object? id = json['candidate_id'] ?? json['candidateId'] ?? json['id'];
+    final Object? id =
+        json['candidate_id'] ?? json['candidateId'] ?? json['id'];
     if (id is! String || id.isEmpty) {
       throw const FormatException('decision missing "candidate_id"');
     }
@@ -87,13 +88,13 @@ class GateDecision {
 
   /// Serializes for audit logs.
   Map<String, Object?> toJson() => <String, Object?>{
-        'candidate_id': candidateId,
-        'source': source.name,
-        'confidence': confidence,
-        if (reason != null) 'reason': reason,
-        if (model != null) 'model': model,
-        if (latency != null) 'latency_ms': latency!.inMilliseconds,
-      };
+    'candidate_id': candidateId,
+    'source': source.name,
+    'confidence': confidence,
+    if (reason != null) 'reason': reason,
+    if (model != null) 'model': model,
+    if (latency != null) 'latency_ms': latency!.inMilliseconds,
+  };
 
   /// Copy with overrides.
   GateDecision copyWith({
@@ -103,16 +104,15 @@ class GateDecision {
     String? reason,
     String? model,
     Duration? latency,
-  }) =>
-      GateDecision(
-        candidateId: candidateId ?? this.candidateId,
-        source: source ?? this.source,
-        confidence: confidence ?? this.confidence,
-        reason: reason ?? this.reason,
-        model: model ?? this.model,
-        latency: latency ?? this.latency,
-        raw: raw,
-      );
+  }) => GateDecision(
+    candidateId: candidateId ?? this.candidateId,
+    source: source ?? this.source,
+    confidence: confidence ?? this.confidence,
+    reason: reason ?? this.reason,
+    model: model ?? this.model,
+    latency: latency ?? this.latency,
+    raw: raw,
+  );
 
   @override
   String toString() =>

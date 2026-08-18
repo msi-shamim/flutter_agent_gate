@@ -80,10 +80,7 @@ abstract final class GateRoute {
 ///   fallback candidate's route; if *that* is missing too, returns null so
 ///   GoRouter proceeds to the current location instead of crashing.
 /// * Loop-safe: returns null when the target equals the current location.
-GoRouterRedirect gateRedirect(
-  Gate gate, {
-  GateStateContext? contextFromState,
-}) {
+GoRouterRedirect gateRedirect(Gate gate, {GateStateContext? contextFromState}) {
   return (BuildContext context, GoRouterState state) async {
     final extra = contextFromState?.call(state) ?? const <String, Object?>{};
     final decision = await AgentGate.instance.decide(gate, extra: extra);

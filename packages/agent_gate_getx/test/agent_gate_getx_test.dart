@@ -15,36 +15,44 @@ class _Fixed implements AgentDecider {
   Stream<String>? reasoning(GateRequest request) => null;
   @override
   Future<GateDecision> decide(GateRequest request) async => GateDecision(
-        candidateId: id,
-        source: DecisionSource.agent,
-        confidence: 0.9,
-        reason: 'test',
-      );
+    candidateId: id,
+    source: DecisionSource.agent,
+    confidence: 0.9,
+    reason: 'test',
+  );
 }
 
 Gate _routeGate() => Gate(
-      id: 'home_to_x',
-      from: 'home',
-      fallback: 'std',
-      config: const GateConfig(showLoadingUi: false),
-      candidates: const <GateCandidate>[
-        GateCandidate(id: 'std', label: 'Std', description: '', route: '/std'),
-        GateCandidate(id: 'exp', label: 'Exp', description: '', route: '/exp'),
-      ],
-    );
+  id: 'home_to_x',
+  from: 'home',
+  fallback: 'std',
+  config: const GateConfig(showLoadingUi: false),
+  candidates: const <GateCandidate>[
+    GateCandidate(id: 'std', label: 'Std', description: '', route: '/std'),
+    GateCandidate(id: 'exp', label: 'Exp', description: '', route: '/exp'),
+  ],
+);
 
 Gate _builderGate() => Gate(
-      id: 'inline',
-      from: 'home',
-      fallback: 'a',
-      config: const GateConfig(showLoadingUi: false),
-      candidates: <GateCandidate>[
-        GateCandidate(
-            id: 'a', label: 'A', description: '', builder: (_) => const Text('PAGE A')),
-        GateCandidate(
-            id: 'b', label: 'B', description: '', builder: (_) => const Text('PAGE B')),
-      ],
-    );
+  id: 'inline',
+  from: 'home',
+  fallback: 'a',
+  config: const GateConfig(showLoadingUi: false),
+  candidates: <GateCandidate>[
+    GateCandidate(
+      id: 'a',
+      label: 'A',
+      description: '',
+      builder: (_) => const Text('PAGE A'),
+    ),
+    GateCandidate(
+      id: 'b',
+      label: 'B',
+      description: '',
+      builder: (_) => const Text('PAGE B'),
+    ),
+  ],
+);
 
 /// A destination that displays the reason it was chosen via GateArguments.
 class _WhyPage extends StatelessWidget {
@@ -60,7 +68,8 @@ class _WhyPage extends StatelessWidget {
 Widget _app({String initial = '/', List<GetPage<dynamic>>? pages}) =>
     GetMaterialApp(
       initialRoute: initial,
-      getPages: pages ??
+      getPages:
+          pages ??
           <GetPage<dynamic>>[
             GetPage(name: '/', page: () => const Text('HOME')),
             GetPage(name: '/std', page: () => const _WhyPage('STD')),
@@ -118,17 +127,21 @@ void main() {
         ),
       );
       Object? seen;
-      await tester.pumpWidget(_app(pages: <GetPage<dynamic>>[
-        GetPage(name: '/', page: () => const Text('HOME')),
-        GetPage(name: '/std', page: () => const Text('STD')),
-        GetPage(
-          name: '/exp',
-          page: () {
-            seen = Get.arguments;
-            return const Text('EXP');
-          },
+      await tester.pumpWidget(
+        _app(
+          pages: <GetPage<dynamic>>[
+            GetPage(name: '/', page: () => const Text('HOME')),
+            GetPage(name: '/std', page: () => const Text('STD')),
+            GetPage(
+              name: '/exp',
+              page: () {
+                seen = Get.arguments;
+                return const Text('EXP');
+              },
+            ),
+          ],
         ),
-      ]));
+      );
       await AgentGate.instance.navigate(_routeGate());
       await tester.pumpAndSettle();
       expect(seen, <String, Object?>{'id': 'exp'});
@@ -148,15 +161,18 @@ void main() {
   });
 
   group('GateGetPage', () {
-    testWidgets('renders chosen candidate inline at a named route',
-        (tester) async {
+    testWidgets('renders chosen candidate inline at a named route', (
+      tester,
+    ) async {
       AgentGate.configure(decider: _Fixed('b'));
-      await tester.pumpWidget(_app(
-        initial: '/inline',
-        pages: <GetPage<dynamic>>[
-          GateGetPage(name: '/inline', gate: _builderGate()),
-        ],
-      ));
+      await tester.pumpWidget(
+        _app(
+          initial: '/inline',
+          pages: <GetPage<dynamic>>[
+            GateGetPage(name: '/inline', gate: _builderGate()),
+          ],
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.text('PAGE B'), findsOneWidget);
     });
@@ -167,20 +183,25 @@ void main() {
         decider: CallbackDecider((r) {
           app = r.context.app;
           return const GateDecision(
-              candidateId: 'a', source: DecisionSource.agent);
+            candidateId: 'a',
+            source: DecisionSource.agent,
+          );
         }),
       );
-      await tester.pumpWidget(_app(
-        initial: '/inline?coupon=SAVE10',
-        pages: <GetPage<dynamic>>[
-          GateGetPage(
-            name: '/inline',
-            gate: _builderGate(),
-            contextFromRoute: (params, _) =>
-                <String, Object?>{'coupon': params['coupon']},
-          ),
-        ],
-      ));
+      await tester.pumpWidget(
+        _app(
+          initial: '/inline?coupon=SAVE10',
+          pages: <GetPage<dynamic>>[
+            GateGetPage(
+              name: '/inline',
+              gate: _builderGate(),
+              contextFromRoute: (params, _) => <String, Object?>{
+                'coupon': params['coupon'],
+              },
+            ),
+          ],
+        ),
+      );
       await tester.pumpAndSettle();
       expect(app!['coupon'], 'SAVE10');
       expect(find.text('PAGE A'), findsOneWidget);
@@ -204,23 +225,30 @@ void main() {
   });
 
   group('GateMiddleware', () {
-    testWidgets('redirectDelegate resolves to the chosen route', (tester) async {
+    testWidgets('redirectDelegate resolves to the chosen route', (
+      tester,
+    ) async {
       AgentGate.configure(decider: _Fixed('exp'));
       // The route tree must exist for GetNavConfig.fromRoute to match.
-      await tester.pumpWidget(_app(pages: <GetPage<dynamic>>[
-        GetPage(name: '/', page: () => const Text('HOME')),
-        GetPage(name: '/checkout', page: () => const SizedBox.shrink()),
-        GetPage(name: '/std', page: () => const Text('STD')),
-        GetPage(name: '/exp', page: () => const Text('EXP')),
-      ]));
+      await tester.pumpWidget(
+        _app(
+          pages: <GetPage<dynamic>>[
+            GetPage(name: '/', page: () => const Text('HOME')),
+            GetPage(name: '/checkout', page: () => const SizedBox.shrink()),
+            GetPage(name: '/std', page: () => const Text('STD')),
+            GetPage(name: '/exp', page: () => const Text('EXP')),
+          ],
+        ),
+      );
       final mw = GateMiddleware(_routeGate());
       final incoming = GetNavConfig.fromRoute('/checkout')!;
       final out = await mw.redirectDelegate(incoming);
       expect(out!.uri.toString(), '/exp');
     });
 
-    testWidgets('returns the incoming route when already at target',
-        (tester) async {
+    testWidgets('returns the incoming route when already at target', (
+      tester,
+    ) async {
       AgentGate.configure(decider: _Fixed('exp'));
       await tester.pumpWidget(_app());
       final mw = GateMiddleware(_routeGate());

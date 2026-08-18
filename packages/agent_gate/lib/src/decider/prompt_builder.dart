@@ -29,29 +29,29 @@ class PromptBuilder {
 
   /// The JSON schema of the decision the model must return.
   Map<String, Object?> decisionSchema(GateRequest r) => <String, Object?>{
-        'type': 'object',
-        'additionalProperties': false,
-        'required': <String>['candidate_id', 'confidence', 'reason'],
-        'properties': <String, Object?>{
-          'candidate_id': <String, Object?>{
-            'type': 'string',
-            'description': 'The id of the single best candidate page.',
-            'enum': r.candidates.map((c) => c.id).toList(),
-          },
-          'confidence': <String, Object?>{
-            'type': 'number',
-            'minimum': 0,
-            'maximum': 1,
-            'description': 'How sure you are, 0..1.',
-          },
-          'reason': <String, Object?>{
-            'type': 'string',
-            'description':
-                'One or two sentences, in plain language, explaining why. '
-                    'This may be shown to the user and stored for audit.',
-          },
-        },
-      };
+    'type': 'object',
+    'additionalProperties': false,
+    'required': <String>['candidate_id', 'confidence', 'reason'],
+    'properties': <String, Object?>{
+      'candidate_id': <String, Object?>{
+        'type': 'string',
+        'description': 'The id of the single best candidate page.',
+        'enum': r.candidates.map((c) => c.id).toList(),
+      },
+      'confidence': <String, Object?>{
+        'type': 'number',
+        'minimum': 0,
+        'maximum': 1,
+        'description': 'How sure you are, 0..1.',
+      },
+      'reason': <String, Object?>{
+        'type': 'string',
+        'description':
+            'One or two sentences, in plain language, explaining why. '
+            'This may be shown to the user and stored for audit.',
+      },
+    },
+  };
 
   /// System prompt: role, rules, and profile-specific guidance.
   String systemPrompt(GateRequest r) {
@@ -67,16 +67,22 @@ class PromptBuilder {
     b.writeln('- Choose ONLY from the provided candidate ids.');
     b.writeln('- Base your choice on the behavioural context and app context.');
     b.writeln('- Explain the reason briefly and truthfully.');
-    b.writeln('- If the context is insufficient, pick the candidate that is '
-        'safest / most neutral for the user and give a low confidence.');
+    b.writeln(
+      '- If the context is insufficient, pick the candidate that is '
+      'safest / most neutral for the user and give a low confidence.',
+    );
     switch (r.profile.name) {
       case 'risk':
-        b.writeln('- This is a RISK decision. Prefer protective outcomes '
-            '(verification, review, safe defaults) when signals are anomalous. '
-            'Never route to a less-protected page on weak evidence.');
+        b.writeln(
+          '- This is a RISK decision. Prefer protective outcomes '
+          '(verification, review, safe defaults) when signals are anomalous. '
+          'Never route to a less-protected page on weak evidence.',
+        );
       case 'recommendation':
-        b.writeln('- This is a RECOMMENDATION decision. Optimise for the '
-            "user's stated and inferred goals; do not pressure or mislead.");
+        b.writeln(
+          '- This is a RECOMMENDATION decision. Optimise for the '
+          "user's stated and inferred goals; do not pressure or mislead.",
+        );
       default:
         break;
     }
@@ -98,46 +104,46 @@ class PromptBuilder {
 
   /// OpenAI-style tool definition.
   Map<String, Object?> openAiTool(GateRequest r) => <String, Object?>{
-        'type': 'function',
-        'function': <String, Object?>{
-          'name': toolName,
-          'description': 'Select the next page for the user.',
-          'parameters': decisionSchema(r),
-          'strict': true,
-        },
-      };
+    'type': 'function',
+    'function': <String, Object?>{
+      'name': toolName,
+      'description': 'Select the next page for the user.',
+      'parameters': decisionSchema(r),
+      'strict': true,
+    },
+  };
 
   /// Full OpenAI chat-completions request body (minus `model`).
   Map<String, Object?> openAiRequest(GateRequest r) => <String, Object?>{
-        'messages': <Map<String, Object?>>[
-          <String, Object?>{'role': 'system', 'content': systemPrompt(r)},
-          <String, Object?>{'role': 'user', 'content': userPrompt(r)},
-        ],
-        'tools': <Object?>[openAiTool(r)],
-        'tool_choice': <String, Object?>{
-          'type': 'function',
-          'function': <String, Object?>{'name': toolName},
-        },
-        'temperature': 0,
-      };
+    'messages': <Map<String, Object?>>[
+      <String, Object?>{'role': 'system', 'content': systemPrompt(r)},
+      <String, Object?>{'role': 'user', 'content': userPrompt(r)},
+    ],
+    'tools': <Object?>[openAiTool(r)],
+    'tool_choice': <String, Object?>{
+      'type': 'function',
+      'function': <String, Object?>{'name': toolName},
+    },
+    'temperature': 0,
+  };
 
   /// Anthropic-style tool definition.
   Map<String, Object?> anthropicTool(GateRequest r) => <String, Object?>{
-        'name': toolName,
-        'description': 'Select the next page for the user.',
-        'input_schema': decisionSchema(r),
-      };
+    'name': toolName,
+    'description': 'Select the next page for the user.',
+    'input_schema': decisionSchema(r),
+  };
 
   /// Full Anthropic messages request body (minus `model` / `max_tokens`).
   Map<String, Object?> anthropicRequest(GateRequest r) => <String, Object?>{
-        'system': systemPrompt(r),
-        'messages': <Map<String, Object?>>[
-          <String, Object?>{'role': 'user', 'content': userPrompt(r)},
-        ],
-        'tools': <Object?>[anthropicTool(r)],
-        'tool_choice': <String, Object?>{'type': 'tool', 'name': toolName},
-        'temperature': 0,
-      };
+    'system': systemPrompt(r),
+    'messages': <Map<String, Object?>>[
+      <String, Object?>{'role': 'user', 'content': userPrompt(r)},
+    ],
+    'tools': <Object?>[anthropicTool(r)],
+    'tool_choice': <String, Object?>{'type': 'tool', 'name': toolName},
+    'temperature': 0,
+  };
 
   /// Gemini-style function declaration.
   Map<String, Object?> geminiFunctionDeclaration(GateRequest r) =>
@@ -149,31 +155,31 @@ class PromptBuilder {
 
   /// Full Gemini generateContent request body.
   Map<String, Object?> geminiRequest(GateRequest r) => <String, Object?>{
-        'system_instruction': <String, Object?>{
-          'parts': <Object?>[
-            <String, Object?>{'text': systemPrompt(r)},
-          ],
-        },
-        'contents': <Object?>[
-          <String, Object?>{
-            'role': 'user',
-            'parts': <Object?>[
-              <String, Object?>{'text': userPrompt(r)},
-            ],
-          },
+    'system_instruction': <String, Object?>{
+      'parts': <Object?>[
+        <String, Object?>{'text': systemPrompt(r)},
+      ],
+    },
+    'contents': <Object?>[
+      <String, Object?>{
+        'role': 'user',
+        'parts': <Object?>[
+          <String, Object?>{'text': userPrompt(r)},
         ],
-        'tools': <Object?>[
-          <String, Object?>{
-            'function_declarations': <Object?>[geminiFunctionDeclaration(r)],
-          },
-        ],
-        'tool_config': <String, Object?>{
-          'function_calling_config': <String, Object?>{
-            'mode': 'ANY',
-            'allowed_function_names': <String>[toolName],
-          },
-        },
-      };
+      },
+    ],
+    'tools': <Object?>[
+      <String, Object?>{
+        'function_declarations': <Object?>[geminiFunctionDeclaration(r)],
+      },
+    ],
+    'tool_config': <String, Object?>{
+      'function_calling_config': <String, Object?>{
+        'mode': 'ANY',
+        'allowed_function_names': <String>[toolName],
+      },
+    },
+  };
 
   // Gemini rejects `additionalProperties`.
   Map<String, Object?> _stripForGemini(Map<String, Object?> s) {

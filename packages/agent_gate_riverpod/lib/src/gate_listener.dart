@@ -92,7 +92,8 @@ class GateListener extends ConsumerWidget {
         child,
         Positioned.fill(
           child: AbsorbPointer(
-            child: AgentGate.instance.loadingBuilder?.call(context, null) ??
+            child:
+                AgentGate.instance.loadingBuilder?.call(context, null) ??
                 const AgentLoadingView(),
           ),
         ),
