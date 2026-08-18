@@ -1,0 +1,35 @@
+name: agent_gate
+description: >-
+  AI-agnostic behavioral routing middleware for Flutter. Collects consent-gated
+  user-behavior signals on a page, lets YOUR backend or AI decide which of up
+  to 999 candidate pages comes next, and routes there with audit trails,
+  fallbacks and timeouts built in. Works with Navigator, GoRouter, GetX,
+  Bloc, Riverpod and any other state-management solution.
+version: 0.1.0
+homepage: https://github.com/msishamim/flutter_agent_gate
+repository: https://github.com/msishamim/flutter_agent_gate
+issue_tracker: https://github.com/msishamim/flutter_agent_gate/issues
+topics:
+  - navigation
+  - ai
+  - agent
+  - fraud-detection
+  - personalization
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  crypto: ^3.0.3
+  meta: ^1.15.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
