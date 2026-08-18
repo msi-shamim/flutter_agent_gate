@@ -536,9 +536,18 @@ The system prompt text is available on-device via `PromptBuilder().systemPrompt(
 
 **What if the model picks something outside the allow-list?** AgentGate rejects it and routes to `fallback`, recording why. Observers get `onFallback`.
 
+## Companion packages & backend samples
+
+| Package | What |
+|---|---|
+| [`agent_gate_go_router`](../agent_gate_go_router) | `GoRouterAdapter`, `GateExtra`, `GateRoute.page`, `GateRoute.redirect` (async redirect middleware) |
+| [`agent_gate_getx`](../agent_gate_getx) | `GetxAdapter` (context-free), `GateArguments`, `GateGetPage`, `GateController`, `GateMiddleware` |
+| [`agent_gate_bloc`](../agent_gate_bloc) | `GateCubit`, `GateBloc`, sealed `GateState`, `GateBlocListener` |
+| [`backends/node`](../../backends/node) | Reference `agent_gate/v1` endpoint — Express + zod + OpenAI-compatible |
+| [`backends/python`](../../backends/python) | Reference `agent_gate/v1` endpoint — FastAPI + OpenAI / Anthropic / Gemini providers |
+
 ## Roadmap
 
-- `agent_gate_go_router`, `agent_gate_getx`, `agent_gate_bloc` companion packages with zero-config adapters (the core stays dependency-free).
 - Optional persistent audit sink (SQLite) and encrypted event buffer.
 - Session-level baseline sync (backend pushes population stats down for on-device pre-scoring).
 - Multi-step "agentic" gates: decide → collect one more signal → re-decide, with a step budget.
